@@ -1,3 +1,0 @@
-#!/bin/bash
-
-git diff $(git merge-base HEAD origin/master)..HEAD $1

@@ -1,3 +1,0 @@
-#!/bin/bash -e
-
-tmate display -p '#{tmate_ssh}'

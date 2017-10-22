@@ -1,5 +1,0 @@
-#!/bin/sh
-
-git log HEAD ^$(git merge-base master HEAD) --no-merges $1
-
-
