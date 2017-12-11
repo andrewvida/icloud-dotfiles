@@ -4,11 +4,11 @@
 	autosetuprebase = always
 	autosetupmerge = true
 [user]
-	name = Justin Searls
-	email = searls@gmail.com
+	name = Andrew Vida
+	email = andrewjvida@gmail.com
 [core]
 	editor = mvim -f
-	excludesfile = /Users/justin/.gitignore_global
+	excludesfile = /Users/andrewvida/.gitignore_global
 	mergetool = opendiff
 [heroku]
 	account = personal
@@ -18,3 +18,5 @@
 	renames = true
 [help]
 	autocorrect = 1
+[alias]
+	hist  = log --pretty=format:\"%Cred%h%Creset %ad | %s%d %C(bold blue)[%an]%Creset %Cgreen(%cr)%Creset\" --graph --date=short
