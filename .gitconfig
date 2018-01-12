@@ -7,7 +7,7 @@
 	name = Andrew Vida
 	email = andrewjvida@gmail.com
 [core]
-	editor = mvim -f
+	editor = nvim
 	excludesfile = /Users/andrewvida/.gitignore_global
 	mergetool = opendiff
 [heroku]

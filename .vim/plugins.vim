@@ -19,8 +19,8 @@ Plug 'majutsushi/tagbar'
 Plug 'mxw/vim-jsx', { 'for': 'javascript' }
 Plug 'ntpeters/vim-airline-colornum'
 Plug 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plug 'scrooloose/syntastic'
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-endwise'
 Plug 'tpope/vim-fugitive'
@@ -28,12 +28,123 @@ Plug 'tpope/vim-markdown', { 'for': 'markdown' }
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
-Plug 'Valloric/YouCompleteMe', { 'do': './install.py' }
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'mileszs/ack.vim'
+Plug 'w0rp/ale'
+
+" deoplete sources
+Plug 'fishbullet/deoplete-ruby'
+
 call plug#end()
+
+" ******************************************************************************
+" ALE
+" ******************************************************************************
+
+" reset sign column background colors
+highlight link ALEErrorSign SignColumn
+highlight link ALEWarningSign SignColumn
+
+" add sign column emoticons
+let g:ale_sign_error = '😱'
+let g:ale_sign_warning = '🚧'
+
+" message format
+let g:ale_echo_msg_format = '[%linter%]: %s ( %severity% )'
+
+" autofix
+let g:ale_fix_on_save = 1
+
+" ale fixers
+let g:ale_fixers = {
+      \  'elixir': [
+      \   'mix_format',
+      \   'remove_trailing_lines',
+      \   'trim_whitespace',
+      \  ],
+      \  'javascript': [
+      \   'eslint',
+      \   'remove_trailing_lines',
+      \   'trim_whitespace',
+      \  ],
+      \  'ruby': [
+      \   'remove_trailing_lines',
+      \   'trim_whitespace',
+      \  ],
+      \}
+
+" ale colors for highlights
+augroup ale_highlights
+  autocmd!
+  autocmd ColorScheme * highlight ALEError ctermbg=88
+  autocmd ColorScheme * highlight ALEWarning ctermbg=8
+augroup end
+
+" does this do anything?
+let g:airline#extensions#ale#enabled = 1
+let g:airline#extensions#ale#error_symbol = 'ERROR:'
+let g:airline#extensions#ale#warning_symbol = 'WARNING:'
+
+" ******************************************************************************
+" DEOPLETE
+" ******************************************************************************
+
+" use deoplete
+let g:deoplete#enable_at_startup = 1
+
+" set max list size
+let g:deoplete#max_list = 10
+
+" set sources
+let g:deoplete#sources = get(g:, 'deoplete#sources', {})
+let g:deoplete#sources._ = [
+      \'around',
+      \'buffer',
+      \'file',
+      \'member',
+      \'tag',
+      \'ultisnips'
+      \]
+
+" ruby configuration
+let g:deoplete#sources.ruby = g:deoplete#sources._ + ['ruby']
+
+" elm configuration
+let g:deoplete#sources.elm = g:deoplete#sources._ + ['elm']
+let g:deoplete#omni_patterns = {}
+let g:deoplete#omni_patterns.elm = '\.'
+
+" elixir configuration
+let g:deoplete#sources.elixir = g:deoplete#sources._ + ['alchemist']
+
+" increase default tag cache
+let deoplete#tag#cache_limit_size = 5000000
+
+" add incremental refresh
+let g:deoplete#enable_refresh_always = 1
+
+" remove complete delay
+let g:deoplete#auto_complete_delay = 0
+" ******************************************************************************
+" FZF.VIM
+" ******************************************************************************
+
+" map Buffers command
+nnoremap <silent> <Leader>b :Buffers<CR>
+
+" map GFiles command
+nnoremap <silent> <Leader>t :GFiles<CR>
+
+" map Files command
+nnoremap <silent> <Leader>F :Files<CR>
+
+" map Snippets command
+nnoremap <silent> <Leader>s :Snippets<CR>
+
+" map Tags command
+nnoremap <silent> <Leader>c :Tags<CR>
 
 " ******************************************************************************
 " RAINBOW_PARENTHESES
@@ -46,38 +157,23 @@ autocmd VimEnter * silent! RainbowParentheses
 let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 
 " ******************************************************************************
-" SYNTASTIC
+" TABULAR
 " ******************************************************************************
 
-" set to check files when opened
-let g:syntastic_check_on_open = 1
-
-" set syntastic symbols
-let g:syntastic_error_symbol = '⛔'
-let g:syntastic_style_error_symbol = '⚠️ '
-let g:syntastic_style_warning_symbol='😱'
-let g:syntastic_warning_symbol = '🚧'
-
-" Update the background for the symbols
-highlight link SyntasticErrorSign SignColumn
-highlight link SyntasticWarningSign SignColumn
-highlight link SyntasticStyleErrorSign SignColumn
-highlight link SyntasticStyleWarningSign SignColumn
-highlight clear SignColumn
-highlight SignColumn guibg=black ctermbg=black
-
-" set syntastic to always populate the loclist
-let g:syntastic_always_populate_loc_list = 1
-
-" close the loclist automatically
-let g:syntastic_auto_loc_list = 2
-
-" toggle the mode
-nnoremap <silent> <leader>s :SyntasticToggleMode<CR>
-
-" turn the elixir checker on
-let g:syntastic_elixir_checkers = ['elixir']
-let g:syntastic_enable_elixir_checker = 1
+function! CustomTabularPatterns()
+  if exists('g:tabular_loaded')
+    AddTabularPattern! symbols         / :/l0
+    AddTabularPattern! hash            /^[^>]*\zs=>/
+    AddTabularPattern! chunks          / \S\+/l0
+    AddTabularPattern! assignment      / = /l0
+    AddTabularPattern! comma           /^[^,]*,/l1
+    AddTabularPattern! colon           /:\zs /l0
+    AddTabularPattern! options_hashes  /:\w\+ =>/
+  endif
+endfunction
+   
+autocmd VimEnter * call CustomTabularPatterns()
+   
 
 " ******************************************************************************
 " TAGBAR
@@ -90,38 +186,11 @@ nnoremap <silent> <F8> :TagbarToggle<CR>
 let g:tagbar_show_linenumbers = 0
 
 " ******************************************************************************
-" TABULAR
-" ******************************************************************************
-function! CustomTabularPatterns()
-  if exists('g:tabular_loaded')
-    AddTabularPattern! symbols         / :/l0
-    AddTabularPattern! hash            /^[^>]*\zs=>/
-    AddTabularPattern! chunks          / \S\+/l0
-    AddTabularPattern! assignment      / = /l0
-    AddTabularPattern! comma           /^[^,]*,/l1
-    AddTabularPattern! colon           /:\zs /l0
-    AddTabularPattern! options_hashes  /:\w\+ =>/
-  endif
-endfunction
-
-autocmd VimEnter * call CustomTabularPatterns()
-
-" ******************************************************************************
 " TRAILERTRASH
 " ******************************************************************************
 
 " Maps to more succient command
 :command! Trim TrailerTrim
-
-" ******************************************************************************
-" ULTISNIPS
-" ******************************************************************************
-
-" trigger mappings
-let g:UltiSnipsExpandTrigger       = "<c-j>"
-let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
-let g:UltiSnipsJumpBackwardTrigger = "<c-k>"
-let g:UltiSnipsListSnippets        = "<c-l>"
 
 " ******************************************************************************
 " VIM-AIRLINE
@@ -130,19 +199,18 @@ let g:UltiSnipsListSnippets        = "<c-l>"
 " add fancy glyphs -- requires a powerline font
 let g:airline_powerline_fonts = 1
 
+" skip empty sections
+let g:airline_skip_empty_sections = 1
+
 " set the airline theme
 let g:airline_theme = 'light'
 
 " ******************************************************************************
-" VIM-COFFEE-SCRIPT
-" ******************************************************************************
-
-" compile CoffeeScript in a new buffer
-vnoremap <silent> <localleader>c :CoffeeCompile<CR>
-
-" ******************************************************************************
 " VIM-GITGUTTER
 " ******************************************************************************
+
+" start with gitgutter off
+let g:gitgutter_enabled = 0
 
 " toggle the git gutter
 nnoremap <silent> <leader>g :GitGutterToggle<CR>
@@ -166,27 +234,24 @@ augroup fugitive_quickfix
 augroup end
 
 " ******************************************************************************
+" VIM-JSX
+" ******************************************************************************
+
+" don't requre the .jsx extension
+let g:jsx_ext_required = 0
+
+" ******************************************************************************
 " VIM-TEST
 " ******************************************************************************
 
-nnoremap <leader>n :wa<cr> :TestNearest<CR>
-nnoremap <leader>f :wa<cr> :TestFile<CR>
-nnoremap <leader>a :wa<cr> :TestSuite<CR>
-nnoremap <leader>l :wa<cr> :TestLast<CR>
+" mappings
+nnoremap <silent> t<C-n> :noautocmd wa<cr> :TestNearest<CR>
+nnoremap <silent> t<C-f> :noautocmd wa<cr> :TestFile<CR>
+nnoremap <silent> t<C-a> :noautocmd wa<cr> :TestSuite<CR>
+nnoremap <silent> t<C-l> :noautocmd wa<cr> :TestLast<CR>
 
-" ******************************************************************************
-" YOUCOMPLETEME
-" ******************************************************************************
+" set the default strategy
+let test#strategy = "neovim"
 
-" add language keywords
-let g:ycm_seed_identifiers_with_syntax = 1
-
-" add tag files integration
-let g:ycm_collect_identifiers_from_tags_files = 1
-
-" ******************************************************************************
-" FZF
-" ******************************************************************************
-nmap ; :Buffers<CR>
-nmap <Leader>t :Files<CR>
-nmap <Leader>r :Tags<CR>
+" switch to the neovim testing terminal
+tnoremap <C-o> <C-\><C-n>
