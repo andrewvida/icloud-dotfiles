@@ -194,3 +194,15 @@ set exrc
 
 " prevent bad things in project-specific files
 set secure
+
+" ******************************************************************************
+" Bubble Lines
+" ******************************************************************************
+
+" Bubble single lines
+nmap <M-Up> ddkP
+nmap <M-Down> ddp
+
+" Bubble multiple lines
+vmap <M-Up> xkP`[V`]
+vmap <M-Down> xp`[V`]
