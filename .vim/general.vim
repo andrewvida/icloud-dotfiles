@@ -51,9 +51,6 @@ set hidden
 " show the line number
 set number
 
-" show the relative line number
-set relativenumber
-
 " scroll buffer
 set scrolloff=10
 
@@ -162,12 +159,12 @@ set listchars=trail:·,precedes:«,extends:»,eol:↲,tab:▸▸
 " ******************************************************************************
 " NUMBERING
 " ******************************************************************************
-
-augroup numbering
-  autocmd!
-  autocmd InsertEnter * set norelativenumber
-  autocmd InsertLeave * set relativenumber
-augroup end
+" Turning off for now...
+" augroup numbering
+"   autocmd!
+"   autocmd InsertEnter * set norelativenumber
+"   autocmd InsertLeave * set relativenumber
+" augroup end
 
 " ******************************************************************************
 " TABS
