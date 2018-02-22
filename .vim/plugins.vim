@@ -28,6 +28,7 @@ Plug 'tpope/vim-markdown', { 'for': 'markdown' }
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-fireplace'
 Plug 'altercation/vim-colors-solarized'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -169,6 +170,11 @@ function! CustomTabularPatterns()
     AddTabularPattern! comma           /^[^,]*,/l1
     AddTabularPattern! colon           /:\zs /l0
     AddTabularPattern! options_hashes  /:\w\+ =>/
+
+    nmap <Leader>a= :Tabularize /=<CR>
+    vmap <Leader>a= :Tabularize /=<CR>
+    nmap <Leader>a: :Tabularize /:\zs<CR>
+    vmap <Leader>a: :Tabularize /:\zs<CR>
   endif
 endfunction
    
